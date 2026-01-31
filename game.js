@@ -392,13 +392,49 @@ class GameScene extends Phaser.Scene {
         const newY = this.cat.gridY + dy;
 
         if (newX >= 0 && newX < GRID_WIDTH && newY >= 0 && newY < GRID_HEIGHT) {
+            // Add current position to trail history before moving
+            const oldPos = { x: this.cat.gridX, y: this.cat.gridY };
+
+            // Only add if not already in trail (avoid overlaps)
+            const isDuplicate = this.trailHistory.some(pos => pos.x === oldPos.x && pos.y === oldPos.y);
+            if (!isDuplicate) {
+                this.trailHistory.unshift(oldPos);
+                // Keep only last 4 positions
+                if (this.trailHistory.length > 4) {
+                    this.trailHistory.pop();
+                }
+            }
+
             this.cat.gridX = newX;
             this.cat.gridY = newY;
+
+            // Remove any trail positions that overlap with new cat position
+            this.trailHistory = this.trailHistory.filter(pos => !(pos.x === newX && pos.y === newY));
             this.animateSprite(this.cat, MOVE_DURATION, () => this.drawCat());
+            this.drawRainbowTrail();
             this.checkMouseCollisions();
             this.checkBirdCollisions();
             this.checkDogCollisions();
         }
+    }
+
+    drawRainbowTrail() {
+        this.rainbowTrail.clear();
+
+        const stripeHeight = TILE_SIZE / 6;
+
+        this.trailHistory.forEach((pos, index) => {
+            const x = pos.x * TILE_SIZE;
+            const y = pos.y * TILE_SIZE + UI_HEIGHT;
+
+            // Draw rainbow stripes (6 colors)
+            for (let i = 0; i < 6; i++) {
+                // Fade alpha based on trail position (older = more transparent)
+                const alpha = 1 - (index * 0.2);
+                this.rainbowTrail.fillStyle(this.rainbowColors[i], alpha);
+                this.rainbowTrail.fillRect(x, y + (i * stripeHeight), TILE_SIZE, stripeHeight);
+            }
+        });
     }
 
     setupUI() {
@@ -670,13 +706,13 @@ class GameScene extends Phaser.Scene {
     }
 
     getHighScore() {
-        return parseInt(localStorage.getItem('helloKittyHighScore') || '0');
+        return parseInt(localStorage.getItem('kittyAttackHighScore') || '0');
     }
 
     saveHighScore(score) {
         const currentHigh = this.getHighScore();
         if (score > currentHigh) {
-            localStorage.setItem('helloKittyHighScore', score.toString());
+            localStorage.setItem('kittyAttackHighScore', score.toString());
         }
     }
 }
@@ -689,7 +725,7 @@ class MenuScene extends Phaser.Scene {
     create() {
         this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x87CEEB);
 
-        this.add.text(GAME_WIDTH / 2, 100, '🐱 Hello Kitty 🐱', {
+        this.add.text(GAME_WIDTH / 2, 100, '🐱 Kitty Attack 🐱', {
             fontSize: '36px',
             fill: '#FF6B6B'
         }).setOrigin(0.5);
@@ -719,7 +755,7 @@ class MenuScene extends Phaser.Scene {
             fill: '#666'
         }).setOrigin(0.5);
 
-        const highScore = localStorage.getItem('helloKittyHighScore') || '0';
+        const highScore = localStorage.getItem('kittyAttackHighScore') || '0';
         this.add.text(GAME_WIDTH / 2, 380, `High Score: ${highScore}`, {
             fontSize: '22px',
             fill: '#FFD700'
