@@ -381,10 +381,21 @@ class GameScene extends Phaser.Scene {
         const btnLeft = document.getElementById('btn-left');
         const btnRight = document.getElementById('btn-right');
 
-        btnUp.addEventListener('click', () => !this.gameOver && this.moveCat(0, -1));
-        btnDown.addEventListener('click', () => !this.gameOver && this.moveCat(0, 1));
-        btnLeft.addEventListener('click', () => !this.gameOver && this.moveCat(-1, 0));
-        btnRight.addEventListener('click', () => !this.gameOver && this.moveCat(1, 0));
+        const handleButton = (btn, dx, dy) => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!this.gameOver) this.moveCat(dx, dy);
+            }, { passive: false });
+            btn.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                if (!this.gameOver) this.moveCat(dx, dy);
+            });
+        };
+
+        handleButton(btnUp, 0, -1);
+        handleButton(btnDown, 0, 1);
+        handleButton(btnLeft, -1, 0);
+        handleButton(btnRight, 1, 0);
 
         // Swipe controls on game canvas
         let touchStartX = 0;
