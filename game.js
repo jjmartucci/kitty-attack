@@ -375,7 +375,7 @@ class GameScene extends Phaser.Scene {
             }
         });
 
-        // Touch controls
+        // Touch button controls
         const btnUp = document.getElementById('btn-up');
         const btnDown = document.getElementById('btn-down');
         const btnLeft = document.getElementById('btn-left');
@@ -385,6 +385,45 @@ class GameScene extends Phaser.Scene {
         btnDown.addEventListener('click', () => !this.gameOver && this.moveCat(0, 1));
         btnLeft.addEventListener('click', () => !this.gameOver && this.moveCat(-1, 0));
         btnRight.addEventListener('click', () => !this.gameOver && this.moveCat(1, 0));
+
+        // Swipe controls on game canvas
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const minSwipeDistance = 30;
+
+        this.input.on('pointerdown', (pointer) => {
+            touchStartX = pointer.x;
+            touchStartY = pointer.y;
+        });
+
+        this.input.on('pointerup', (pointer) => {
+            if (this.gameOver) return;
+
+            const deltaX = pointer.x - touchStartX;
+            const deltaY = pointer.y - touchStartY;
+            const absX = Math.abs(deltaX);
+            const absY = Math.abs(deltaY);
+
+            // Only register as swipe if moved enough distance
+            if (Math.max(absX, absY) < minSwipeDistance) return;
+
+            // Determine swipe direction (horizontal vs vertical)
+            if (absX > absY) {
+                // Horizontal swipe
+                if (deltaX > 0) {
+                    this.moveCat(1, 0);  // Right
+                } else {
+                    this.moveCat(-1, 0); // Left
+                }
+            } else {
+                // Vertical swipe
+                if (deltaY > 0) {
+                    this.moveCat(0, 1);  // Down
+                } else {
+                    this.moveCat(0, -1); // Up
+                }
+            }
+        });
     }
 
     moveCat(dx, dy) {

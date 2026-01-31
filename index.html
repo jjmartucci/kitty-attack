@@ -21,25 +21,24 @@
         }
         #game-container {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-        }
-        #touch-controls {
-            display: none;
-            margin-top: 20px;
-            user-select: none;
-        }
-        .control-row {
-            display: flex;
             justify-content: center;
+            gap: 15px;
+        }
+        .touch-controls {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            user-select: none;
+            gap: 10px;
         }
         .control-btn {
-            width: 60px;
-            height: 60px;
-            margin: 5px;
-            font-size: 24px;
+            width: 70px;
+            height: 70px;
+            font-size: 28px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             background: #3498db;
             color: white;
             cursor: pointer;
@@ -48,37 +47,23 @@
         .control-btn:active {
             background: #2980b9;
         }
-        .empty-space {
-            width: 60px;
-            height: 60px;
-            margin: 5px;
-        }
         @media (pointer: coarse) {
-            #touch-controls {
-                display: block;
+            .touch-controls {
+                display: flex;
             }
         }
     </style>
 </head>
 <body>
     <div id="game-container">
+        <div class="touch-controls" id="left-controls">
+            <button class="control-btn" id="btn-up">▲</button>
+            <button class="control-btn" id="btn-down">▼</button>
+        </div>
         <div id="game"></div>
-        <div id="touch-controls">
-            <div class="control-row">
-                <div class="empty-space"></div>
-                <button class="control-btn" id="btn-up">▲</button>
-                <div class="empty-space"></div>
-            </div>
-            <div class="control-row">
-                <button class="control-btn" id="btn-left">◀</button>
-                <div class="empty-space"></div>
-                <button class="control-btn" id="btn-right">▶</button>
-            </div>
-            <div class="control-row">
-                <div class="empty-space"></div>
-                <button class="control-btn" id="btn-down">▼</button>
-                <div class="empty-space"></div>
-            </div>
+        <div class="touch-controls" id="right-controls">
+            <button class="control-btn" id="btn-left">◀</button>
+            <button class="control-btn" id="btn-right">▶</button>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
